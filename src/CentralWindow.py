@@ -12,6 +12,7 @@ import time
 import StandardFilter
 import inspect
 from Recording import Recorder
+from ProcessChain import ProcessChain
 
 class FrameworkCentralWidget(QtGui.QMdiArea):
     
@@ -96,7 +97,7 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         chain_widget.setLayout(chain_layout)
         chain_subwindow.setWidget(chain_tab_widget)
         chain_tab_widget.addTab(chain_widget, "Chain 1")
-        self.process_list = QtGui.QListWidget()
+        self.process_list = ProcessChain(self)
         self.process_list.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
         self.process_list.itemClicked.connect(self.removeItem)
         chain_layout.addWidget(self.process_list)
@@ -112,18 +113,19 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         
     def removeItem(self, item):
         self.process_list.takeItem(self.process_list.row(item))
+        self.process_list.remove(item)
         
     def inputChanged(self, index):
         if self.cap:
             self.cap.stop()
             time.sleep(1)
             self.cap = None
-        self.process_list.addItem(self.inputBox.currentText())
         if self.inputBox.currentText() == "Video File":
             path = QtGui.QFileDialog.getOpenFileName(self, 'Open Fle', '/home')
             self.cap = FileVideoStream(str(path))
         else:
             self.cap = self.inputBox.itemData(index).toPyObject()
+        self.process_list.setSource(self.inputBox.currentText(), self.cap)
         
     def filterChanged(self, index):
         if self.process_list.count() == 0:
@@ -132,10 +134,12 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
             msg.setInformativeText("First item in process chain has to be a video source")
             msg.setStandardButtons(QMessageBox.Ok)
             retval = msg.exec_()  
-        elif self.process_list.item(self.process_list.count()-1).text() == "Display":
-            self.process_list.insertItem(self.process_list.count()-1, self.filterBox.currentText())
+        #elif self.process_list.item(self.process_list.count()-1).text() == "Display":
+        #    self.process_list.insertItem(self.process_list.count()-1, self.filterBox.currentText())
+        #else:
+        #    self.process_list.addItem(self.filterBox.currentText())
         else:
-            self.process_list.addItem(self.filterBox.currentText())
+            self.process_list.addFilter(self.filterBox.currentText())
         
     def addFilter(self, filter):
         if isinstance(filter, AbstractFilter):
@@ -145,7 +149,14 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         self.process_list.addItem(self.analyserBox.currentText())
         
     def outputChanged(self, index):
-        self.process_list.addItem(self.outputBox.currentText())
+        if self.process_list.count() == 0:
+            msg = QMessageBox()
+            msg.setText("No Source")
+            msg.setInformativeText("First item in process chain has to be a video source")
+            msg.setStandardButtons(QMessageBox.Ok)
+            retval = msg.exec_()  
+        else:
+            self.process_list.addItem(self.outputBox.currentText())
         
     def start(self):
         if self.process_list.count() == 0:
@@ -176,8 +187,8 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
             pass
         
     def nextFrameSlot(self):
-        frame = self.cap.read()
-        frame = self.runProcessChain(frame)
+        #frame = self.cap.read()
+        frame = self.process_list.runChain()
         write_frame = frame.copy()
         frame = cv2.resize(frame, (200, 200))
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
@@ -191,9 +202,3 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         else:
             pass
         
-    def runProcessChain(self, image):
-        for index in xrange(self.process_list.count()):
-            if index == 0 or index == self.process_list.count()-1:
-                continue
-            image, suc = self.filterBox.itemData(self.filterBox.findText(self.process_list.item(index).text())).toPyObject().execute(image)
-        return image
