@@ -18,6 +18,11 @@ class ProcessChain(QListWidget):
         self.output = []
         self.parent = parent
         self.stream = None
+        self.itemClicked.connect(self.removeItem)
+        
+    def removeItem(self, item):
+        self.takeItem(self.row(item))
+        self.remove(item)
         
     def setSource(self, source, stream):
         self.source = source
@@ -27,7 +32,13 @@ class ProcessChain(QListWidget):
         self.addItem(source)
         
     def addFilter(self, filter):
-        if self.source == "Display":
+        if self.source == None:
+            msg = QMessageBox()
+            msg.setText("No Source")
+            msg.setInformativeText("First item in process chain has to be a video source")
+            msg.setStandardButtons(QMessageBox.Ok)
+            retval = msg.exec_() 
+        if "Display" in self.output:
             self.insertItem(self.count()-1, filter)
             self.filters.append(filter)
             self.filter_count += 1
@@ -36,6 +47,17 @@ class ProcessChain(QListWidget):
             self.filter_count += 1
             self.filters.append(filter)
             
+    def addOutput(self, output):
+        if self.source == None:
+            msg = QMessageBox()
+            msg.setText("No Source")
+            msg.setInformativeText("First item in process chain has to be a video source")
+            msg.setStandardButtons(QMessageBox.Ok)
+            retval = msg.exec_()  
+        else:
+            self.addItem(output)
+            self.output.append(output)
+    
     def remove(self, item):
         if item in self.filters:
             self.filter_count -= 1

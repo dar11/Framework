@@ -17,6 +17,7 @@ class WebcamVideoStream(AbstractVideoStream):
         return self.resolution
 
     def start(self):
+        self.stopped = False
         Thread(target=self.update, args=()).start()
         return self
     
