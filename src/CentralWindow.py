@@ -22,9 +22,9 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         self.initUI()
         
     def initUI(self):
-        self.fps = 24
+        self.fps = 10
         self.cap = None
-        self.webcam = WebcamVideoStream(resolution=(960, 720), framerate=10)
+        self.webcam = WebcamVideoStream(resolution=(320, 240), framerate=10)
         self.picam = PiVideoStream(resolution=(960, 720), framerate=10)
         self.recorder = Recorder(resolution=(960,720))
         self.timer = None
@@ -109,7 +109,7 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         chain_widget = ProcessTabWidget(self)
         chain_widget.setLayout(chain_layout)
         chain_subwindow.setWidget(self.chain_tab_widget)
-        self.chain_tab_widget.addTab(chain_widget, "Chain 1")
+        self.chain_tab_widget.addTab(chain_widget, "Default")
         chain_layout.addWidget(chain_widget.process_chain)
         
         self.addSubWindow(chain_subwindow)
@@ -122,17 +122,14 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         self.tileSubWindows()
         
     def addChain(self):
+        text, ok = QInputDialog.getText(self, 'Enter Process Name', 'Please enter a name for the process chain!')
         new_tab = ProcessTabWidget(self)
         new_layout = QtGui.QVBoxLayout()
         new_tab.setLayout(new_layout)
-        self.chain_tab_widget.addTab(new_tab, "Chain")
+        self.chain_tab_widget.addTab(new_tab, text)
         new_layout.addWidget(new_tab.process_chain)
            
     def inputChanged(self, index):
-        #if self.cap:
-        #    self.cap.stop()
-        #    time.sleep(1)
-        #    self.cap = None
         if self.inputBox.currentText() == "Video File":
             path = QtGui.QFileDialog.getOpenFileName(self, 'Open Fle', '/home')
             self.cap = FileVideoStream(str(path))
@@ -167,7 +164,6 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
             msg.setStandardButtons(QMessageBox.Ok)
             retval = msg.exec_()
         elif isinstance(self.inputBox.itemData(self.inputBox.findText(self.chain_tab_widget.currentWidget().process_chain.item(0).text())).toPyObject(), AbstractVideoStream):
-            #self.cap.start()
             time.sleep(2)
             self.timer = QtCore.QTimer()
             self.timer.timeout.connect(self.nextFrameSlot)
@@ -181,9 +177,7 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
             retval = msg.exec_()    
         
     def stop(self):
-        #print "Clicked Stop"
         if self.timer:
-            #print "Stopping Central"
             self.timer.stop()
             self.chain_tab_widget.currentWidget().process_chain.stop()
             self.video_frame.hide()
@@ -191,10 +185,15 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
             pass
         
     def nextFrameSlot(self):
+        if self.chain_tab_widget.currentWidget().process_chain.count() == 0:
+            return
         frame = self.chain_tab_widget.currentWidget().process_chain.runChain()
         write_frame = frame.copy()
         frame = cv2.resize(frame, (400, 400))
-        frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+        if len(frame.shape) <= 2:
+            frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
+        else:
+            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         img = QtGui.QImage(frame, frame.shape[1], frame.shape[0], QtGui.QImage.Format_RGB888)
         pix = QtGui.QPixmap.fromImage(img)
 
