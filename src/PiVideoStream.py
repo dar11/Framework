@@ -17,7 +17,7 @@ class PiVideoStream(AbstractVideoStream):
         # initialize the frame and the variable used to indicate
         # if the thread should be stopped
         self.frame = None
-        self.stopped = False
+        self.stopped = True
         
     def get_resolution(self):
         return self.camera.resolution
@@ -25,6 +25,7 @@ class PiVideoStream(AbstractVideoStream):
 
     def start(self):
         # start the thread to read frames from the video stream
+        self.stopped = False
         t = Thread(target=self.update, args=())
         t.daemon = True
         print "Starting Camera..."

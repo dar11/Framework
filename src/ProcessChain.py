@@ -1,5 +1,6 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+import time
 
 class ProcessItem:
     
@@ -63,7 +64,15 @@ class ProcessChain(QListWidget):
             self.filter_count -= 1
         self.takeItem(self.row(item))
         
+    def stop(self):
+        #print "Stopping Chain"
+        #self.stream.stop()
+        time.sleep(2)
+        
     def runChain(self):
+        if self.stream.stopped:
+            self.stream.start()
+            time.sleep(2)
         image = self.stream.read()
         for index in xrange(self.count()):
             if index == 0 or index == self.count()-1:

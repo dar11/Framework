@@ -36,44 +36,51 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         control_widget = QtGui.QWidget()
         control_subwindow.setWidget(control_widget)
         control_widget.setLayout(control_layout)
+        
         start_button = QtGui.QPushButton("Start")
         start_button.clicked.connect(self.start)
+        control_layout.addWidget(start_button, 4, 0)
         
         add_tab_button = QtGui.QPushButton("Add Process Chain")
         add_tab_button.clicked.connect(self.addChain)
         control_layout.addWidget(add_tab_button, 5, 0)
         
-        control_layout.addWidget(start_button, 4, 0)
         stop_button = QtGui.QPushButton("Stop")
         stop_button.clicked.connect(self.stop)
         control_layout.addWidget(stop_button, 4, 1)
-        input = QtGui.QLabel("Input")
-        control_layout.addWidget(input, 0, 0)
+        
+        source_label = QtGui.QLabel("Input")
+        control_layout.addWidget(source_label, 0, 0)
+        
         self.inputBox = QtGui.QComboBox(self)
         self.inputBox.activated.connect(self.inputChanged)
         self.inputBox.addItem("Webcam", self.webcam)
         self.inputBox.addItem("Picam", self.picam)
         self.inputBox.addItem("Video File")
         control_layout.addWidget(self.inputBox, 0, 1)
-        filter = QtGui.QLabel("Filter")
-        control_layout.addWidget(filter, 1, 0)
+        
+        filter_label = QtGui.QLabel("Filter")
+        control_layout.addWidget(filter_label, 1, 0)
+        
         self.filterBox = QtGui.QComboBox(self)
         self.filterBox.activated.connect(self.filterChanged)
+        control_layout.addWidget(self.filterBox, 1, 1)
         
         for m in inspect.getmembers(StandardFilter, inspect.isclass):
             if m[1].__module__ == 'StandardFilter':
                 filter = m[1]()
                 self.filterBox.addItem(m[0], filter)
         
-        control_layout.addWidget(self.filterBox, 1, 1)
-        analysis = QtGui.QLabel("Analyser")
-        control_layout.addWidget(analysis, 2, 0)
+        analysis_label = QtGui.QLabel("Analyser")
+        control_layout.addWidget(analysis_label, 2, 0)
+        
         self.analysisBox = QtGui.QComboBox(self)
         self.analysisBox.activated.connect(self.analyserChanged)
         control_layout.addWidget(self.analysisBox, 2, 1)
         
-        output = QtGui.QLabel("Output")
-        control_layout.addWidget(output, 3, 0)
+        output_label = QtGui.QLabel("Output")
+        control_layout.addWidget(output_label, 3, 0)
+        
         self.outputBox = QtGui.QComboBox(self)
         self.outputBox.addItem("Display")
         self.outputBox.addItem("Writer")
@@ -99,16 +106,11 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         chain_layout = QtGui.QVBoxLayout()
         chain_subwindow = QtGui.QMdiSubWindow()
         chain_subwindow.setWindowTitle("Process Chain")
-        #chain_widget = QtGui.QWidget()
         chain_widget = ProcessTabWidget(self)
         chain_widget.setLayout(chain_layout)
         chain_subwindow.setWidget(self.chain_tab_widget)
         self.chain_tab_widget.addTab(chain_widget, "Chain 1")
-        #self.process_list = ProcessChain(self)
-        #self.process_list.setDragDropMode(QtGui.QAbstractItemView.InternalMove)
-        #self.process_list.itemClicked.connect(self.removeItem)
-        #chain_layout.addWidget(self.process_list)
-        chain_layout.addWidget(self.chain_tab_widget.currentWidget().process_chain)
+        chain_layout.addWidget(chain_widget.process_chain)
         
         self.addSubWindow(chain_subwindow)
         self.addSubWindow(control_subwindow)
@@ -125,50 +127,36 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         new_tab.setLayout(new_layout)
         self.chain_tab_widget.addTab(new_tab, "Chain")
         new_layout.addWidget(new_tab.process_chain)
-        
-    def removeItem(self, item):
-        self.process_list.takeItem(self.process_list.row(item))
-        self.process_list.remove(item)
-        
+           
     def inputChanged(self, index):
-        if self.cap:
-            self.cap.stop()
-            time.sleep(1)
-            self.cap = None
+        #if self.cap:
+        #    self.cap.stop()
+        #    time.sleep(1)
+        #    self.cap = None
         if self.inputBox.currentText() == "Video File":
             path = QtGui.QFileDialog.getOpenFileName(self, 'Open Fle', '/home')
             self.cap = FileVideoStream(str(path))
         else:
             self.cap = self.inputBox.itemData(index).toPyObject()
-        #self.process_list.setSource(self.inputBox.currentText(), self.cap)
-        print self.chain_tab_widget.currentWidget()
         self.chain_tab_widget.currentWidget().process_chain.setSource(self.inputBox.currentText(), self.cap)
         
     def filterChanged(self, index):
-        #if self.process_list.count() == 0:
-        #    msg = QMessageBox()
-        #    msg.setText("No Source")
-        #    msg.setInformativeText("First item in process chain has to be a video source")
-        #    msg.setStandardButtons(QMessageBox.Ok)
-        #    retval = msg.exec_()  
-        #elif self.process_list.item(self.process_list.count()-1).text() == "Display":
-        #    self.process_list.insertItem(self.process_list.count()-1, self.filterBox.currentText())
-        #else:
-        #    self.process_list.addItem(self.filterBox.currentText())
-        #else:
-            #self.process_list.addFilter(self.filterBox.currentText())
         self.chain_tab_widget.currentWidget().process_chain.addFilter(self.filterBox.currentText())
         
     def addFilter(self, filter):
         if isinstance(filter, AbstractFilter):
             self.filterBox.addItem(filter.name, filter)
+        else:
+            msg = QMessageBox()
+            msg.setText("No Filter found")
+            msg.setInformativeText("Filter is not of type AbstractFilter")
+            msg.setStandardButtons(QMessageBox.Ok)
+            retval = msg.exec_()
         
     def analyserChanged(self, index):
-        #self.process_list.addItem(self.analyserBox.currentText())
         self.chain_tab_widget.currentWidget().process_chain.addItem(self.analysisBox.currentText())
         
     def outputChanged(self, index):
-        #self.process_list.addOutput(self.outputBox.currentText())
         self.chain_tab_widget.currentWidget().process_chain.addOutput(self.outputBox.currentText())
         
     def start(self):
@@ -179,7 +167,7 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
             msg.setStandardButtons(QMessageBox.Ok)
             retval = msg.exec_()
         elif isinstance(self.inputBox.itemData(self.inputBox.findText(self.chain_tab_widget.currentWidget().process_chain.item(0).text())).toPyObject(), AbstractVideoStream):
-            self.cap.start()
+            #self.cap.start()
             time.sleep(2)
             self.timer = QtCore.QTimer()
             self.timer.timeout.connect(self.nextFrameSlot)
@@ -193,18 +181,19 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
             retval = msg.exec_()    
         
     def stop(self):
+        #print "Clicked Stop"
         if self.timer:
+            #print "Stopping Central"
             self.timer.stop()
+            self.chain_tab_widget.currentWidget().process_chain.stop()
             self.video_frame.hide()
         else:
             pass
         
     def nextFrameSlot(self):
-        #frame = self.cap.read()
-        #frame = self.process_list.runChain()
         frame = self.chain_tab_widget.currentWidget().process_chain.runChain()
         write_frame = frame.copy()
-        frame = cv2.resize(frame, (200, 200))
+        frame = cv2.resize(frame, (400, 400))
         frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
         img = QtGui.QImage(frame, frame.shape[1], frame.shape[0], QtGui.QImage.Format_RGB888)
         pix = QtGui.QPixmap.fromImage(img)
