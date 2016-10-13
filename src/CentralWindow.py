@@ -40,14 +40,17 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         
         start_button = QtGui.QPushButton("Start")
         start_button.clicked.connect(self.start)
+        start_button.setStyleSheet("background-color: rgb(242, 189, 12)")
         control_layout.addWidget(start_button, 4, 0)
         
         add_tab_button = QtGui.QPushButton("Add Process Chain")
         add_tab_button.clicked.connect(self.addChain)
+        add_tab_button.setStyleSheet("background-color: rgb(242, 189, 12)")
         control_layout.addWidget(add_tab_button, 5, 0)
         
         stop_button = QtGui.QPushButton("Stop")
         stop_button.clicked.connect(self.stop)
+        stop_button.setStyleSheet("background-color: rgb(242, 189, 12)")
         control_layout.addWidget(stop_button, 4, 1)
         
         source_label = QtGui.QLabel("Input")

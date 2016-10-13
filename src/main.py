@@ -7,18 +7,19 @@ from CentralWindow import FrameworkCentralWidget
 from MyFilter import MyEdgeFilter
 from HandPre import HandPre
 from Classifier import Classifier
+from HandAnalyser import HandAnalyser
 
         
 def main():
     app = QtGui.QApplication(sys.argv)
     window = FrameworkMainWindow()
     centralWidget = FrameworkCentralWidget()
-    myEdgeFilter = MyEdgeFilter("MyEdgeFilter")
-    handPre = HandPre("HandPre")
+    handPre = HandPre("Skin")
     cls = Classifier("Classifier")
-    centralWidget.addFilter(myEdgeFilter)
+    handAnalyser = HandAnalyser("HandAnalyser")
     centralWidget.addFilter(handPre)
     centralWidget.addAnalyser(cls)
+    centralWidget.addAnalyser(handAnalyser)
     window.setCentralWidget(centralWidget)
     window.show()
     sys.exit(app.exec_())

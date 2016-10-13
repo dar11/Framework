@@ -85,9 +85,7 @@ class ProcessChain(QListWidget):
 
         
     def stop(self):
-        #print "Stopping Chain"
-        #self.stream.stop()
-        time.sleep(2)
+        time.sleep(1)
         
     def runChain(self):
         if self.stream is None:
