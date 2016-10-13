@@ -37,5 +37,5 @@ class FrameworkMainWindow(QtGui.QMainWindow):
         self.toolbar.addAction(exitAction)
         
         
-        self.setGeometry(50, 50, 1200, 720)
-        self.show()
+        #self.setGeometry(50, 50, 1200, 720)
+        self.showMaximized()

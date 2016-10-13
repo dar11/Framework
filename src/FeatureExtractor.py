@@ -18,6 +18,7 @@ def getFeatures(image):
     features = []
     
     contours, binary = getSkinContours(image)
+    #image = cv2.Canny(image, 100, 200)
     hu_moments = getHuMoments(binary)
     for hu in hu_moments:
         features.append(hu)

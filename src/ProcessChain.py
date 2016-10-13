@@ -1,6 +1,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 import time
+import cv2
 
 class ProcessItem:
     
@@ -22,8 +23,8 @@ class ProcessChain(QListWidget):
         self.itemClicked.connect(self.removeItem)
         
     def removeItem(self, item):
+        self.remove(item.text())
         self.takeItem(self.row(item))
-        self.remove(item)
         
     def setSource(self, source, stream):
         self.source = source
@@ -39,7 +40,7 @@ class ProcessChain(QListWidget):
             msg.setInformativeText("First item in process chain has to be a video source")
             msg.setStandardButtons(QMessageBox.Ok)
             retval = msg.exec_() 
-        if "Display" in self.output:
+        if len(self.output) > 0:
             self.insertItem(self.count()-1, filter)
             self.filters.append(filter)
             self.filter_count += 1
@@ -47,6 +48,20 @@ class ProcessChain(QListWidget):
             self.addItem(filter)
             self.filter_count += 1
             self.filters.append(filter)
+            
+    def addAnalyser(self, analyser):
+        if self.source == None:
+            msg = QMessageBox()
+            msg.setText("No Source")
+            msg.setInformativeText("First item in process chain has to be a video source")
+            msg.setStandardButtons(QMessageBox.Ok)
+            retval = msg.exec_() 
+        if len(self.output) > 0:
+            self.insertItem(self.count()-1, analyser)
+            self.analyser.append(analyser)
+        else:
+            self.addItem(analyser)
+            self.analyser.append(analyser)
             
     def addOutput(self, output):
         if self.source == None:
@@ -62,7 +77,12 @@ class ProcessChain(QListWidget):
     def remove(self, item):
         if item in self.filters:
             self.filter_count -= 1
-        self.takeItem(self.row(item))
+            self.filters.remove(item)
+        elif item in self.output:
+            self.output.remove(item)
+        elif item in self.analyser:
+            self.analyser.remove(item)
+
         
     def stop(self):
         #print "Stopping Chain"
@@ -76,10 +96,14 @@ class ProcessChain(QListWidget):
             self.stream.start()
             time.sleep(2)
         image = self.stream.read()
+        image = cv2.flip(image, 1)
         for index in xrange(self.count()):
             if index == 0 or index == self.count()-1:
                 continue
-            image, suc = self.parent.filterBox.itemData(self.parent.filterBox.findText(self.item(index).text())).toPyObject().execute(image)
+            if index <= self.filter_count:
+                image, suc = self.parent.filterBox.itemData(self.parent.filterBox.findText(self.item(index).text())).toPyObject().execute(image)
+            if index > self.filter_count:
+                image, suc = self.parent.analysisBox.itemData(self.parent.analysisBox.findText(self.item(index).text())).toPyObject().analyse(image)
         return image        
 
         

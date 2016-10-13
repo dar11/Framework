@@ -5,6 +5,7 @@ from PyQt4.QtGui import *
 from WebcamVideoStream import WebcamVideoStream
 from AbstractVideoStream import AbstractVideoStream
 from AbstractFilter import AbstractFilter
+from AbstractAnalyser import AbstractAnalyser
 from PiVideoStream import PiVideoStream
 from FileVideoStream import FileVideoStream
 import cv2
@@ -149,9 +150,13 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
             msg.setInformativeText("Filter is not of type AbstractFilter")
             msg.setStandardButtons(QMessageBox.Ok)
             retval = msg.exec_()
+            
+    def addAnalyser(self, analyser):
+        if isinstance(analyser, AbstractAnalyser):
+            self.analysisBox.addItem(analyser.name, analyser)
         
     def analyserChanged(self, index):
-        self.chain_tab_widget.currentWidget().process_chain.addItem(self.analysisBox.currentText())
+        self.chain_tab_widget.currentWidget().process_chain.addAnalyser(self.analysisBox.currentText())
         
     def outputChanged(self, index):
         self.chain_tab_widget.currentWidget().process_chain.addOutput(self.outputBox.currentText())

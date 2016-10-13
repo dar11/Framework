@@ -18,7 +18,7 @@ def main():
     cls = Classifier("Classifier")
     centralWidget.addFilter(myEdgeFilter)
     centralWidget.addFilter(handPre)
-    centralWidget.addFilter(cls)
+    centralWidget.addAnalyser(cls)
     window.setCentralWidget(centralWidget)
     window.show()
     sys.exit(app.exec_())

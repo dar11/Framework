@@ -5,7 +5,7 @@ import cv2
 import numpy as np
 from sklearn.externals import joblib
 
-class Classifier(AbstractFilter):
+class Classifier(AbstractAnalyser):
     
     def __init__(self, name):
         super(Classifier, self).__init__(name)
@@ -16,7 +16,7 @@ class Classifier(AbstractFilter):
         cv2.putText(image, self.last_gesture, (0,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 2)
         return image
     
-    def execute(self, image):
+    def analyse(self, image):
         image_features = FeatureExtractor.getFeatures(image)
         image_features = np.array([image_features])
         
@@ -32,4 +32,5 @@ class Classifier(AbstractFilter):
             image = self.writeLastGesture(image)
             
         return image, True
+    
         
