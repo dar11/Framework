@@ -7,8 +7,12 @@ class AbstractFilter(object):
         self.name = name
     
     @abstractmethod
-    def execute(self, image):
-        return image
+    def execute(self, image, orig):
+        return image, orig
+    
+    @abstractmethod
+    def getParameters(self):
+        pass
     
     def register(self, parent):
         parent.gui.append_filter(self)

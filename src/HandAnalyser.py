@@ -144,8 +144,7 @@ class HandAnalyser(AbstractAnalyser):
             
         return frame    
 
-    def analyse(self, image):
-        original = image.copy()
+    def analyse(self, image, orig):
         image = self.getSkin(image)
         contours = self.getContours(image)
         if len(contours) > 0:
@@ -155,16 +154,16 @@ class HandAnalyser(AbstractAnalyser):
             self.getMaxInscribedCircle(contour, image)
             self.getConvexHull(contour)
             
-            original = cv2.drawContours(original, [contour], 0, (255, 0, 0), 1)
-            original = self.drawConvexHull(original)
-            original = self.drawDefects(contour, original)
-            original = self.drawMinEnclosingCircle(original)
-            original = self.drawMaxInscribedCircle(original)
+            original = cv2.drawContours(orig, [contour], 0, (255, 0, 0), 1)
+            original = self.drawConvexHull(orig)
+            original = self.drawDefects(contour, orig)
+            original = self.drawMinEnclosingCircle(orig)
+            original = self.drawMaxInscribedCircle(orig)
             
             #original = cv2.rectangle(original, (50,0), (50,320), (255, 0, 0), 2)
             #original = cv2.rectangle(original, (270,0), (270,320), (255, 0, 0), 2)
             
-        return original, True
+        return image, orig
         
     
     

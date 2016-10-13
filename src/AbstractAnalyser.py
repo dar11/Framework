@@ -7,5 +7,5 @@ class AbstractAnalyser(object):
         self.name = name
     
     @abstractmethod
-    def analyse(self, image):
-        return image
+    def analyse(self, image, orig):
+        return image, orig

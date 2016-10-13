@@ -8,6 +8,7 @@ from MyFilter import MyEdgeFilter
 from HandPre import HandPre
 from Classifier import Classifier
 from HandAnalyser import HandAnalyser
+from MinEnclosing import MinEnclosing
 
         
 def main():

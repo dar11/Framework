@@ -29,6 +29,7 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         self.picam = PiVideoStream(resolution=(960, 720), framerate=10)
         self.recorder = Recorder(resolution=(960,720))
         self.timer = None
+        self.show_image = True
         
         control_layout = QtGui.QGridLayout()
         control_layout.setAlignment(Qt.AlignTop)
@@ -37,6 +38,18 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         control_widget = QtGui.QWidget()
         control_subwindow.setWidget(control_widget)
         control_widget.setLayout(control_layout)
+        
+        self.parameter_label = QtGui.QLabel()
+        control_layout.addWidget(self.parameter_label, 7, 0)
+        
+        self.show_image_button = QtGui.QRadioButton("Show Image")
+        self.show_image_button.setChecked(True)
+        self.show_image_button.toggled.connect(lambda:self.changeImage(self.show_image_button))
+        control_layout.addWidget(self.show_image_button, 6, 0)
+        
+        self.show_orig_button = QtGui.QRadioButton("Show Original")
+        self.show_orig_button.toggled.connect(lambda:self.changeImage(self.show_orig_button))
+        control_layout.addWidget(self.show_orig_button, 6, 1)
         
         start_button = QtGui.QPushButton("Start")
         start_button.clicked.connect(self.start)
@@ -125,6 +138,12 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         control_subwindow.show()
         self.tileSubWindows()
         
+    def changeImage(self, b):
+        if b.text() == "Show Image":
+            self.show_image = True
+        elif b.text() == "Show Original":
+            self.show_image = False
+        
     def addChain(self):
         text, ok = QInputDialog.getText(self, 'Enter Process Name', 'Please enter a name for the process chain!')
         new_tab = ProcessTabWidget(self)
@@ -192,10 +211,25 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         else:
             pass
         
+    def showParameters(self):
+        filter = self.filterBox.itemData(self.filterBox.findText(self.chain_tab_widget.currentWidget().process_chain.currentItem().text())).toPyObject()
+        if isinstance(filter, AbstractFilter):
+            parameters = filter.getParameters()
+            self.parameter_label.setText("Parameters:\n")
+            for param in parameters:
+                text = self.parameter_label.text()
+                text.append(param + "\n")
+                self.parameter_label.setText(text)
+        
+        
     def nextFrameSlot(self):
         if self.chain_tab_widget.currentWidget().process_chain.count() == 0:
             return
-        frame = self.chain_tab_widget.currentWidget().process_chain.runChain()
+        frame, orig = self.chain_tab_widget.currentWidget().process_chain.runChain()
+        if self.show_image:
+            frame = frame
+        else:
+            frame = orig
         write_frame = frame.copy()
         frame = cv2.resize(frame, (400, 400))
         if len(frame.shape) <= 2:

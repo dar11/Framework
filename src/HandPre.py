@@ -16,8 +16,7 @@ class HandPre(AbstractFilter):
         
         self.kernel = np.ones((1,3), np.uint8)
     
-    def execute(self, image):
-        image = cv2.flip(image, 1)
+    def execute(self, image, orig):
         
         frameYCrCb = cv2.cvtColor(image, cv2.COLOR_BGR2YCrCb)
         for i in range(5):
@@ -29,4 +28,7 @@ class HandPre(AbstractFilter):
             i += 1
         skin = cv2.morphologyEx(skin, cv2.MORPH_CLOSE, self.kernel)
         skin = cv2.medianBlur(skin, 11)
-        return skin, True
+        return skin, orig
+    
+    def getParameters(self):
+        return ["No Parameters"]

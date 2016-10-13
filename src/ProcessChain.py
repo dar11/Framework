@@ -1,5 +1,7 @@
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
+from PyQt4 import QtCore
+from PyQt4 import QtGui
 import time
 import cv2
 
@@ -20,11 +22,37 @@ class ProcessChain(QListWidget):
         self.output = []
         self.parent = parent
         self.stream = None
-        self.itemClicked.connect(self.removeItem)
+        self.itemClicked.connect(self.showParameters)
+        self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.connect(self, QtCore.SIGNAL("customContextMenuRequested(QPoint)"), self.removeItem)
         
-    def removeItem(self, item):
-        self.remove(item.text())
-        self.takeItem(self.row(item))
+    def showParameters(self, item):
+        self.parent.showParameters()
+        
+    def removeItem(self, QPos):
+        self.listMenu = QtGui.QMenu()
+        menu_item = self.listMenu.addAction("Remove")
+        self.listMenu.connect(menu_item, QtCore.SIGNAL("triggered()"), self.remove)
+        parentPosition = self.mapToGlobal(QtCore.QPoint(0, 0))        
+        self.listMenu.move(parentPosition + QPos)
+        self.listMenu.show() 
+        
+    def remove(self):
+        currentItem = self.currentItem()
+        currentName = self.currentItem().text()
+        if currentName in self.filters:
+            self.filter_count -= 1
+            self.filters.remove(currentName)
+        elif currentName in self.output:
+            self.output.remove(currentName)
+        elif currentName in self.analyser:
+            self.analyser.remove(currentName)
+        self.takeItem(self.row(currentItem))
+
+        
+    #def removeItem(self, item):
+    #    self.remove(item.text())
+    #    self.takeItem(self.row(item))
         
     def setSource(self, source, stream):
         self.source = source
@@ -74,14 +102,14 @@ class ProcessChain(QListWidget):
             self.addItem(output)
             self.output.append(output)
     
-    def remove(self, item):
-        if item in self.filters:
-            self.filter_count -= 1
-            self.filters.remove(item)
-        elif item in self.output:
-            self.output.remove(item)
-        elif item in self.analyser:
-            self.analyser.remove(item)
+    #def remove(self, item):
+    #    if item in self.filters:
+    #        self.filter_count -= 1
+    #        self.filters.remove(item)
+    #    elif item in self.output:
+    #        self.output.remove(item)
+    #    elif item in self.analyser:
+    #        self.analyser.remove(item)
 
         
     def stop(self):
@@ -95,14 +123,15 @@ class ProcessChain(QListWidget):
             time.sleep(2)
         image = self.stream.read()
         image = cv2.flip(image, 1)
+        orig = image.copy()
         for index in xrange(self.count()):
             if index == 0 or index == self.count()-1:
                 continue
             if index <= self.filter_count:
-                image, suc = self.parent.filterBox.itemData(self.parent.filterBox.findText(self.item(index).text())).toPyObject().execute(image)
+                image, orig = self.parent.filterBox.itemData(self.parent.filterBox.findText(self.item(index).text())).toPyObject().execute(image, orig)
             if index > self.filter_count:
-                image, suc = self.parent.analysisBox.itemData(self.parent.analysisBox.findText(self.item(index).text())).toPyObject().analyse(image)
-        return image        
+                image, orig = self.parent.analysisBox.itemData(self.parent.analysisBox.findText(self.item(index).text())).toPyObject().analyse(image, orig)
+        return image, orig        
 
         
         

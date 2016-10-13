@@ -9,14 +9,14 @@ class Classifier(AbstractAnalyser):
     
     def __init__(self, name):
         super(Classifier, self).__init__(name)
-        self.classifier, self.training_names, self.normalization_parameter, self.train_features, self.train_labels, self.selector, self.scaler = joblib.load("/home/pi/Desktop/CubisMain/framework/classifier.pkl")
+        self.classifier, self.training_names, self.normalization_parameter, self.train_features, self.train_labels, self.selector, self.scaler = joblib.load("/home/pi/Desktop/Framework/src/classifier.pkl")
         self.last_gesture = ""
     
     def writeLastGesture(self, image):
         cv2.putText(image, self.last_gesture, (0,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 2)
         return image
     
-    def analyse(self, image):
+    def analyse(self, image, orig):
         image_features = FeatureExtractor.getFeatures(image)
         image_features = np.array([image_features])
         
@@ -31,6 +31,6 @@ class Classifier(AbstractAnalyser):
             self.last_gesture = "Unsure"
             image = self.writeLastGesture(image)
             
-        return image, True
+        return image, orig
     
         
