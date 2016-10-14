@@ -22,12 +22,11 @@ class FrameworkMainWindow(QtGui.QMainWindow):
         
     def classifier(self):
         images = str(QtGui.QFileDialog.getExistingDirectory(self, 'Select Images', '/home'))
-        cmd = 'python ' + str(os.getcwd()) +'/Trainer.py -t ' + images
-        #p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
-        #out, err = p.communicate()
-        p = subprocess.Popen(cmd, stdout=None, stderr=None, stdin=None, shell=True)
-        p.wait()
-        print "Completed"
+        if images:
+            cmd = 'python ' + str(os.getcwd()) +'/Trainer.py -t ' + images
+            p = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+            out, err = p.communicate()
+            print "Completed"
         
     def initUI(self):
         self.setWindowTitle("SartoCV")

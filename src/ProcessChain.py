@@ -50,16 +50,12 @@ class ProcessChain(QListWidget):
         self.takeItem(self.row(currentItem))
 
         
-    #def removeItem(self, item):
-    #    self.remove(item.text())
-    #    self.takeItem(self.row(item))
-        
     def setSource(self, source, stream):
         self.source = source
         self.stream = stream
         if self.count() > 0:
             self.takeItem(0)
-        self.addItem(source)
+        self.insertItem(0, source)
         
     def addFilter(self, filter):
         if self.source == None:
@@ -102,14 +98,6 @@ class ProcessChain(QListWidget):
             self.addItem(output)
             self.output.append(output)
     
-    #def remove(self, item):
-    #    if item in self.filters:
-    #        self.filter_count -= 1
-    #        self.filters.remove(item)
-    #    elif item in self.output:
-    #        self.output.remove(item)
-    #    elif item in self.analyser:
-    #        self.analyser.remove(item)
 
         
     def stop(self):
