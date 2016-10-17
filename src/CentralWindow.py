@@ -15,6 +15,8 @@ import inspect
 from Recording import Recorder
 from ProcessChain import ProcessChain
 from ProcessTabWidget import ProcessTabWidget
+from AbstractOutput import AbstractOutput
+from Display import Display
 
 class FrameworkCentralWidget(QtGui.QMdiArea):
     
@@ -99,8 +101,8 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         control_layout.addWidget(output_label, 3, 0)
         
         self.outputBox = QtGui.QComboBox(self)
-        self.outputBox.addItem("Display")
-        self.outputBox.addItem("Writer")
+        self.outputBox.addItem("Display", Display(self))
+        self.outputBox.addItem("Writer", Recorder(resolution=(960,720)))
         self.outputBox.activated.connect(self.outputChanged)
         control_layout.addWidget(self.outputBox, 3, 1)
         
@@ -226,23 +228,5 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         if self.chain_tab_widget.currentWidget().process_chain.count() == 0:
             return
         frame, orig = self.chain_tab_widget.currentWidget().process_chain.runChain()
-        if self.show_image:
-            frame = frame
-        else:
-            frame = orig
         write_frame = frame.copy()
-        frame = cv2.resize(frame, (400, 400))
-        if len(frame.shape) <= 2:
-            frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
-        else:
-            frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
-        img = QtGui.QImage(frame, frame.shape[1], frame.shape[0], QtGui.QImage.Format_RGB888)
-        pix = QtGui.QPixmap.fromImage(img)
-
-        if self.chain_tab_widget.currentWidget().process_chain.count() > 0 and self.chain_tab_widget.currentWidget().process_chain.item(self.chain_tab_widget.currentWidget().process_chain.count()-1).text() == "Display":
-            self.video_frame.setPixmap(pix)
-        elif self.chain_tab_widget.currentWidget().process_chain.count() > 0 and self.chain_tab_widget.currentWidget().process_chain.item(self.chain_tab_widget.currentWidget().process_chain.count()-1).text() == "Writer":
-            self.recorder.write_image(write_frame)
-        else:
-            pass
         

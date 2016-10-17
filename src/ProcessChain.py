@@ -113,12 +113,18 @@ class ProcessChain(QListWidget):
         image = cv2.flip(image, 1)
         orig = image.copy()
         for index in xrange(self.count()):
-            if index == 0 or index == self.count()-1:
+            if index == 0:
                 continue
             if index <= self.filter_count:
                 image, orig = self.parent.filterBox.itemData(self.parent.filterBox.findText(self.item(index).text())).toPyObject().execute(image, orig)
-            if index > self.filter_count:
+            if index > self.filter_count and index < self.count() - 1:
                 image, orig = self.parent.analysisBox.itemData(self.parent.analysisBox.findText(self.item(index).text())).toPyObject().analyse(image, orig)
+            if index == self.count()-1:
+                if self.parent.show_image:
+                    image = image
+                else:
+                    image = orig
+                self.parent.outputBox.itemData(self.parent.outputBox.findText(self.item(index).text())).toPyObject().output(image)
         return image, orig        
 
         
