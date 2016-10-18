@@ -31,6 +31,6 @@ class Classifier(AbstractAnalyser):
             self.last_gesture = "Unsure"
             image = self.writeLastGesture(image)
             
-        return image, orig
+        return image, orig, self.last_gesture
     
         

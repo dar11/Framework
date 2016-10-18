@@ -17,6 +17,7 @@ from ProcessChain import ProcessChain
 from ProcessTabWidget import ProcessTabWidget
 from AbstractOutput import AbstractOutput
 from Display import Display
+from GestureToCubis import GestureToCubis
 
 class FrameworkCentralWidget(QtGui.QMdiArea):
     
@@ -103,6 +104,7 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         self.outputBox = QtGui.QComboBox(self)
         self.outputBox.addItem("Display", Display(self))
         self.outputBox.addItem("Writer", Recorder(resolution=(960,720)))
+        self.outputBox.addItem("GestureToCubis", GestureToCubis())
         self.outputBox.activated.connect(self.outputChanged)
         control_layout.addWidget(self.outputBox, 3, 1)
         

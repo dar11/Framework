@@ -17,6 +17,7 @@ class ProcessChain(QListWidget):
         super(ProcessChain, self).__init__()
         self.source = None
         self.filter_count = 0
+        self.output_count = 0
         self.filters = []
         self.analyser = []
         self.output = []
@@ -25,6 +26,13 @@ class ProcessChain(QListWidget):
         self.itemClicked.connect(self.showParameters)
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.connect(self, QtCore.SIGNAL("customContextMenuRequested(QPoint)"), self.removeItem)
+        
+    #def dragEnterEvent(self, event):
+    #    event.accept()
+        
+    #def dropEvent(self, event):
+        #print event.mimeData().text()
+    #    event.accept()
         
     def showParameters(self, item):
         self.parent.showParameters()
@@ -45,6 +53,7 @@ class ProcessChain(QListWidget):
             self.filters.remove(currentName)
         elif currentName in self.output:
             self.output.remove(currentName)
+            self.output_count -= 1
         elif currentName in self.analyser:
             self.analyser.remove(currentName)
         self.takeItem(self.row(currentItem))
@@ -96,6 +105,7 @@ class ProcessChain(QListWidget):
             retval = msg.exec_()  
         else:
             self.addItem(output)
+            self.output_count += 1
             self.output.append(output)
     
 
@@ -112,19 +122,20 @@ class ProcessChain(QListWidget):
         image = self.stream.read()
         image = cv2.flip(image, 1)
         orig = image.copy()
+        info = None
         for index in xrange(self.count()):
             if index == 0:
                 continue
             if index <= self.filter_count:
                 image, orig = self.parent.filterBox.itemData(self.parent.filterBox.findText(self.item(index).text())).toPyObject().execute(image, orig)
-            if index > self.filter_count and index < self.count() - 1:
-                image, orig = self.parent.analysisBox.itemData(self.parent.analysisBox.findText(self.item(index).text())).toPyObject().analyse(image, orig)
-            if index == self.count()-1:
+            if index > self.filter_count and index < self.count() - self.output_count:
+                image, orig, info = self.parent.analysisBox.itemData(self.parent.analysisBox.findText(self.item(index).text())).toPyObject().analyse(image, orig)
+            if index >= self.count()-self.output_count:
                 if self.parent.show_image:
                     image = image
                 else:
                     image = orig
-                self.parent.outputBox.itemData(self.parent.outputBox.findText(self.item(index).text())).toPyObject().output(image)
+                self.parent.outputBox.itemData(self.parent.outputBox.findText(self.item(index).text())).toPyObject().output(image, info)
         return image, orig        
 
         

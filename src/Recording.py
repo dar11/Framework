@@ -10,7 +10,7 @@ class Recorder(AbstractOutput):
         self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
         self.out = cv2.VideoWriter('output.avi', self.fourcc, 10.0, resolution)
         
-    def output(self, image):
+    def output(self, image, info):
         self.out.write(image)
         
     def replay_video(self):
