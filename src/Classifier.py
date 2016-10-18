@@ -25,11 +25,11 @@ class Classifier(AbstractAnalyser):
         
         if confidence > 0.7:
             self.last_gesture = str([self.training_names[i] for i in self.classifier.predict(image_features)][0])
-            image = self.writeLastGesture(image)
+            orig = self.writeLastGesture(orig)
         
         else:
             self.last_gesture = "Unsure"
-            image = self.writeLastGesture(image)
+            orig = self.writeLastGesture(orig)
             
         return image, orig, self.last_gesture
     

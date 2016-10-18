@@ -30,7 +30,7 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         self.cap = None
         self.webcam = WebcamVideoStream(resolution=(320, 240), framerate=10)
         self.picam = PiVideoStream(resolution=(960, 720), framerate=10)
-        self.recorder = Recorder(resolution=(960,720))
+        self.recorder = Recorder(resolution=(320,240))
         self.timer = None
         self.show_image = True
         
