@@ -6,6 +6,7 @@ import time
 class WebcamVideoStream(AbstractVideoStream):
     
     def __init__(self, src=0, resolution=(320,320), framerate=32):
+        self.name = "Webcam"
         self.resolution = resolution
         self.framerate = framerate
         self.src = src

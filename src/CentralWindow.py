@@ -18,6 +18,10 @@ from ProcessTabWidget import ProcessTabWidget
 from AbstractOutput import AbstractOutput
 from Display import Display
 from GestureToCubis import GestureToCubis
+from InputListModel import InputListModel
+from FilterListModel import FilterListModel
+from AnalyserListModel import AnalyserListModel
+from OutputListModel import OutputListModel
 
 class FrameworkCentralWidget(QtGui.QMdiArea):
     
@@ -72,24 +76,34 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         source_label = QtGui.QLabel("Input")
         control_layout.addWidget(source_label, 0, 0)
         
+        self.inputModel = InputListModel([self.webcam, self.picam])
+        
         self.inputBox = QtGui.QComboBox(self)
         self.inputBox.activated.connect(self.inputChanged)
-        self.inputBox.addItem("Webcam", self.webcam)
-        self.inputBox.addItem("Picam", self.picam)
-        self.inputBox.addItem("Video File")
+        #self.inputBox.addItem("Webcam", self.webcam)
+        #self.inputBox.addItem("Picam", self.picam)
+        #self.inputBox.addItem("Video File")
+        self.inputBox.setModel(self.inputModel)
         control_layout.addWidget(self.inputBox, 0, 1)
         
         filter_label = QtGui.QLabel("Filter")
         control_layout.addWidget(filter_label, 1, 0)
         
+        
         self.filterBox = QtGui.QComboBox(self)
         self.filterBox.activated.connect(self.filterChanged)
         control_layout.addWidget(self.filterBox, 1, 1)
-        
+        filterList = []
         for m in inspect.getmembers(StandardFilter, inspect.isclass):
             if m[1].__module__ == 'StandardFilter':
                 filter = m[1]()
-                self.filterBox.addItem(m[0], filter)
+                #self.filterBox.addItem(m[0], filter)
+                filterList.append(filter)
+                
+        self.filterModel = FilterListModel(filterList)
+        self.filterBox.setModel(self.filterModel)
+        
+        self.analyserModel = AnalyserListModel([])
         
         analysis_label = QtGui.QLabel("Analyser")
         control_layout.addWidget(analysis_label, 2, 0)
@@ -97,15 +111,20 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         self.analysisBox = QtGui.QComboBox(self)
         self.analysisBox.activated.connect(self.analyserChanged)
         control_layout.addWidget(self.analysisBox, 2, 1)
+        self.analysisBox.setModel(self.analyserModel)
         
         output_label = QtGui.QLabel("Output")
         control_layout.addWidget(output_label, 3, 0)
         
+        self.outputModel = OutputListModel([Display(self), Recorder(resolution=(960,720)), GestureToCubis()])
+        
         self.outputBox = QtGui.QComboBox(self)
-        self.outputBox.addItem("Display", Display(self))
-        self.outputBox.addItem("Writer", Recorder(resolution=(960,720)))
-        self.outputBox.addItem("GestureToCubis", GestureToCubis())
+        #self.outputBox.addItem("Display", Display(self))
+        #self.outputBox.addItem("Writer", Recorder(resolution=(960,720)))
+        #self.outputBox.addItem("GestureToCubis", GestureToCubis())
         self.outputBox.activated.connect(self.outputChanged)
+        
+        self.outputBox.setModel(self.outputModel)
         control_layout.addWidget(self.outputBox, 3, 1)
         
         
@@ -161,15 +180,19 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
             path = QtGui.QFileDialog.getOpenFileName(self, 'Open Fle', '/home')
             self.cap = FileVideoStream(str(path))
         else:
-            self.cap = self.inputBox.itemData(index).toPyObject()
+            print self.inputModel.index(index).data(role=QtCore.Qt.UserRole).toPyObject()
+            #self.cap = self.inputBox.itemData(index).toPyObject()
+            self.cap = self.inputModel.index(index).data(role=QtCore.Qt.UserRole).toPyObject()
         self.chain_tab_widget.currentWidget().process_chain.setSource(self.inputBox.currentText(), self.cap)
+        #self.chain_tab_widget.currentWidget().process_chain.addItem(self.cap)
         
     def filterChanged(self, index):
         self.chain_tab_widget.currentWidget().process_chain.addFilter(self.filterBox.currentText())
         
     def addFilter(self, filter):
         if isinstance(filter, AbstractFilter):
-            self.filterBox.addItem(filter.name, filter)
+            #self.filterBox.addItem(filter.name, filter)
+            self.filterModel.addFilter(filter)
         else:
             msg = QMessageBox()
             msg.setText("No Filter found")
@@ -180,6 +203,7 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
     def addAnalyser(self, analyser):
         if isinstance(analyser, AbstractAnalyser):
             self.analysisBox.addItem(analyser.name, analyser)
+            self.analyserModel.addAnalyser(analyser)
         
     def analyserChanged(self, index):
         self.chain_tab_widget.currentWidget().process_chain.addAnalyser(self.analysisBox.currentText())

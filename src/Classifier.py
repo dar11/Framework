@@ -11,6 +11,7 @@ class Classifier(AbstractAnalyser):
         super(Classifier, self).__init__(name)
         self.classifier, self.training_names, self.normalization_parameter, self.train_features, self.train_labels, self.selector, self.scaler = joblib.load("/home/pi/Desktop/Framework/src/classifier.pkl")
         self.last_gesture = ""
+        self.name = "Classifier"
     
     def writeLastGesture(self, image):
         cv2.putText(image, self.last_gesture, (0,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 2)

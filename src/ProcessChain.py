@@ -4,6 +4,7 @@ from PyQt4 import QtCore
 from PyQt4 import QtGui
 import time
 import cv2
+from ProcessListModel import ProcessListModel
 
 class ProcessItem:
     
@@ -11,10 +12,13 @@ class ProcessItem:
         self.successors = []
         
 
+#class ProcessChain(QListWidget):
 class ProcessChain(QListWidget):
     
     def __init__(self, parent):
         super(ProcessChain, self).__init__()
+        #self.model = ProcessListModel()
+        #self.setModel(self.model)
         self.source = None
         self.filter_count = 0
         self.output_count = 0
@@ -33,6 +37,9 @@ class ProcessChain(QListWidget):
     #def dropEvent(self, event):
         #print event.mimeData().text()
     #    event.accept()
+        
+    #def addItem(self, item):
+    #    self.model.addItem(item)
         
     def showParameters(self, item):
         self.parent.showParameters()
