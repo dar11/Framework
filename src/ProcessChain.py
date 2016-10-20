@@ -80,7 +80,7 @@ class ProcessChain(QListWidget):
             msg.setInformativeText("First item in process chain has to be a video source")
             msg.setStandardButtons(QMessageBox.Ok)
             retval = msg.exec_() 
-        if len(self.output) > 0:
+        elif len(self.output) > 0:
             self.insertItem(self.count()-1, filter)
             self.filters.append(filter)
             self.filter_count += 1
@@ -96,7 +96,7 @@ class ProcessChain(QListWidget):
             msg.setInformativeText("First item in process chain has to be a video source")
             msg.setStandardButtons(QMessageBox.Ok)
             retval = msg.exec_() 
-        if len(self.output) > 0:
+        elif len(self.output) > 0:
             self.insertItem(self.count()-1, analyser)
             self.analyser.append(analyser)
         else:

@@ -11,7 +11,7 @@ class Display(AbstractOutput):
         self.parent = parent
         
     def output(self, frame, info):
-        frame = cv2.resize(frame, (400, 400))
+        frame = cv2.resize(frame, (640, 480))
         if len(frame.shape) <= 2:
             frame = cv2.cvtColor(frame, cv2.COLOR_GRAY2RGB)
         else:

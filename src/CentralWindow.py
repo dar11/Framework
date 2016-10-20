@@ -22,6 +22,7 @@ from InputListModel import InputListModel
 from FilterListModel import FilterListModel
 from AnalyserListModel import AnalyserListModel
 from OutputListModel import OutputListModel
+from Classifier import Classifier
 
 class FrameworkCentralWidget(QtGui.QMdiArea):
     
@@ -105,7 +106,7 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         self.filterModel = FilterListModel(filterList)
         self.filterBox.setModel(self.filterModel)
         
-        self.analyserModel = AnalyserListModel([])
+        self.analyserModel = AnalyserListModel([Classifier("Classifier")])
         
         analysis_label = QtGui.QLabel("Analyser")
         control_layout.addWidget(analysis_label, 2, 0)
@@ -138,6 +139,7 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         stream_subwindow.setWidget(stream_widget)
         stream_widget.setLayout(stream_layout)
         self.video_frame = QtGui.QLabel()
+        self.video_frame.setScaledContents(True)
         stream_layout.addWidget(self.video_frame)
         self.video_frame_2 = QtGui.QLabel()
         stream_layout.addWidget(self.video_frame_2)
@@ -221,7 +223,7 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
             
     def addAnalyser(self, analyser):
         if isinstance(analyser, AbstractAnalyser):
-            self.analysisBox.addItem(analyser.name, analyser)
+            #self.analysisBox.addItem(analyser.name, analyser)
             self.analyserModel.addAnalyser(analyser)
         
     def analyserChanged(self, index):

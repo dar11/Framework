@@ -20,7 +20,7 @@ class VolumeAnalyser(AbstractAnalyser):
         self.show_select_image = False
         self.selected_region = False
         
-        self.max_volume = 4.5
+        self.max_volume = 0
         
 
         
@@ -53,10 +53,12 @@ class VolumeAnalyser(AbstractAnalyser):
         
             
     def analyse(self, image, orig):
-        while self.number_of_bins is None:
+        while self.number_of_bins is None or self.max_volume == 0:
             bins, ok = QtGui.QInputDialog.getInt(QtGui.QWidget(),"Enter number of Bins", "Please enter the number of bins")
-            if ok:
+            volume, ok2 = QtGui.QInputDialog.getDouble(QtGui.QWidget(),"Enter maximum volume", "Please enter the maximum volume")
+            if ok and ok2:
                 self.number_of_bins = bins
+                self.max_volume = volume
                 self.last_procents = [[0] for i in range(int(self.number_of_bins))]
                 self.frames = [[] for i in range(int(self.number_of_bins))]
                 self.values = [[] for i in range(int(self.number_of_bins))]
