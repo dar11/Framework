@@ -8,6 +8,9 @@ class EdgeFilter(AbstractFilter):
     
     def __init__(self):
         self.name = "EdgeFilter"
+        self.description = "Performs an edge detection on the input image."
+        self.input = "Two images of any format."
+        self.output = "Returns a binary image and the original image."
         self.first = 100
         self.second = 200
     
@@ -22,6 +25,9 @@ class HSVFilter(AbstractFilter):
     
     def __init__(self):
         self.name = "HSVFilter"
+        self.description = "Performs a color space transformation into the HSV space."
+        self.input = "Input image of any format with three channels."
+        self.output = "Returns the image in HSV color space and the original image."
         
     def execute(self, image, orig):
         if len(image.shape) > 2:
@@ -38,6 +44,9 @@ class GrayFilter(AbstractFilter):
     
     def __init__(self):
         self.name = "GrayFilter"
+        self.description = "Converts the input image into grayscale."
+        self.input = "Input image of any format with three channels."
+        self.output = "Returns the image in grayscale format and the original image."
         
     def execute(self, image, orig):
         if len(image.shape) > 2:
@@ -54,6 +63,9 @@ class YCrCbFilter(AbstractFilter):
     
     def __init__(self):
         self.name = "YCrCbFilter"
+        self.description = "Performs a color space transformation into the YCrCb space."
+        self.input = "Input image of any format with three channels."
+        self.output = "Returns the image in YCrCb color space and the original image."
         
     def execute(self, image, orig):
         if len(image.shape) > 2:
@@ -70,6 +82,9 @@ class MinEnclosing(AbstractFilter):
     
     def __init__(self):
         self.name = "MinEnclosing"
+        self.description = "Calculates the minimum enclosing circle of the maximum contour of the input image."
+        self.input = "Binary and original image"
+        self.output = "Returns the binary input image and the original image with the minimum enclosing circle drawn on it."
         self.center = (0,0)
         self.radius = 0
     
@@ -92,6 +107,9 @@ class ConvexHull(AbstractFilter):
     
     def __init__(self):
         self.name = "ConvexHull"
+        self.description = "Calculates the convex hull of the maximum contour of the input image."
+        self.input = "Binary and original image"
+        self.output = "Returns the binary input image and the original image with the convex hull drawn on it."
         
     def execute(self, image, orig):
         temp_cont = image.copy()
@@ -111,6 +129,9 @@ class MaxInscribed(AbstractFilter):
     
     def __init__(self):
         self.name = "MaxInscribed"
+        self.description = "Calculates the maximum inscribed circle of the maximum contour of the input image."
+        self.input = "Binary and original image"
+        self.output = "Returns the binary input image and the original image with the maximum inscribed circle drawn on it."
         self.max_inscribed_center = (0,0)
         self.max_inscribed_radius = 0
         
@@ -147,6 +168,9 @@ class ColorFilter(AbstractFilter):
     
     def __init__(self):
         self.name = "Color Filter"
+        self.description = "Lets the user select a color range the input image will filtered based on."
+        self.input = "Input image of any format with three channels."
+        self.output = "Returns a binary image with the specified colors displayed as white and everything else as black and the original image."
         self.lowerColorPicked = False
         self.upperColorPicked = False
         self.lowerColor = None
@@ -177,6 +201,9 @@ class Defects(AbstractFilter):
     
     def __init__(self):
         self.name = "Defects"
+        self.description = "Calculates the defects of the maximum contour of the input image."
+        self.input = "Binary and original image"
+        self.output = "Returns the binary input image and the original image with the defects drawn on it."
         
     def execute(self, image, orig):
         temp_cont = image.copy()

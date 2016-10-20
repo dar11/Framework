@@ -20,8 +20,9 @@ class FilterListModel(QtCore.QAbstractListModel):
         if role == QtCore.Qt.ToolTipRole:
             row = index.row()
             value = self.__filter[row]
+            tooltip = "Name: " + value.name + "\nDescription: " + value.description + "\nInput: " + value.input + "\nOutput: " + value.output 
             
-            return value.name
+            return tooltip
         
         if role == QtCore.Qt.DisplayRole:
             

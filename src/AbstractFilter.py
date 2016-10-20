@@ -5,6 +5,9 @@ class AbstractFilter(object):
     
     def __init__(self, name):
         self.name = name
+        self.description = "Not specified"
+        self.input = "Not specified"
+        self.output = "Not specified"
     
     @abstractmethod
     def execute(self, image, orig):
