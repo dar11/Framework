@@ -32,9 +32,9 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
     def initUI(self):
         self.fps = 10
         self.cap = None
-        self.webcam = WebcamVideoStream(resolution=(320, 240), framerate=10)
+        self.webcam = WebcamVideoStream(resolution=(960, 720), framerate=10)
         self.picam = PiVideoStream(resolution=(960, 720), framerate=10)
-        self.recorder = Recorder(resolution=(320,240))
+        self.recorder = Recorder(resolution=(960,720))
         self.timer = None
         self.show_image = True
         
@@ -91,6 +91,8 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         
         
         self.filterBox = QtGui.QComboBox(self)
+        #self.filterBox.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        #self.filterBox.customContextMenuRequested.connect(self.showMenu)
         self.filterBox.activated.connect(self.filterChanged)
         control_layout.addWidget(self.filterBox, 1, 1)
         filterList = []
@@ -160,6 +162,23 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
         chain_subwindow.show()
         control_subwindow.show()
         self.tileSubWindows()
+        
+    def showMenu(self, QPos):
+        #menu = QtGui.QMenu()
+        #param_action = menu.addAction("Change Parameters")
+        #action = menu.exec_(self.mapToGlobal(pos))
+        #if action == param_action:
+        #    print self.filterBox.currentText()
+            
+        self.filterMenu = QtGui.QMenu()
+        param_item = self.filterMenu.addAction("Change Parameter")
+        self.filterMenu.connect(param_item, QtCore.SIGNAL("triggered()"), self.changeParameter)
+        parentPosition = self.mapToGlobal(QtCore.QPoint(0, 0))        
+        self.filterMenu.move(parentPosition + QPos)
+        self.filterMenu.show()
+        
+    def changeParameter(self):
+        print "Change Parameter" 
         
     def changeImage(self, b):
         if b.text() == "Show Image":

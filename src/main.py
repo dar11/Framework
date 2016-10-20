@@ -9,6 +9,8 @@ from HandPre import HandPre
 from Classifier import Classifier
 from HandAnalyser import HandAnalyser
 from MinEnclosing import MinEnclosing
+from VolumeAnalyser import VolumeAnalyser
+from FilterAppFilter import FilterAppFilter
 
         
 def main():
@@ -16,9 +18,13 @@ def main():
     window = FrameworkMainWindow()
     centralWidget = FrameworkCentralWidget()
     handPre = HandPre("Skin")
+    filterApp = FilterAppFilter("FilterApp")
     cls = Classifier("Classifier")
+    volume = VolumeAnalyser("Volume")
     centralWidget.addFilter(handPre)
     centralWidget.addAnalyser(cls)
+    centralWidget.addAnalyser(volume)
+    centralWidget.addFilter(filterApp)
     window.setCentralWidget(centralWidget)
     window.show()
     sys.exit(app.exec_())
