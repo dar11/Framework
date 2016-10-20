@@ -29,7 +29,7 @@ class ProcessChain(QListWidget):
         self.stream = None
         self.itemClicked.connect(self.showParameters)
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
-        self.connect(self, QtCore.SIGNAL("customContextMenuRequested(QPoint)"), self.removeItem)
+        self.connect(self, QtCore.SIGNAL("customContextMenuRequested(QPoint)"), self.showMenu)
         
     #def dragEnterEvent(self, event):
     #    event.accept()
@@ -44,13 +44,18 @@ class ProcessChain(QListWidget):
     def showParameters(self, item):
         self.parent.showParameters()
         
-    def removeItem(self, QPos):
+    def showMenu(self, QPos):
         self.listMenu = QtGui.QMenu()
+        param_item = self.listMenu.addAction("Change Parameter")
+        self.listMenu.connect(param_item, QtCore.SIGNAL("triggered()"), self.changeParameter)
         menu_item = self.listMenu.addAction("Remove")
         self.listMenu.connect(menu_item, QtCore.SIGNAL("triggered()"), self.remove)
         parentPosition = self.mapToGlobal(QtCore.QPoint(0, 0))        
         self.listMenu.move(parentPosition + QPos)
         self.listMenu.show() 
+        
+    def changeParameter(self):
+        self.parent.filterBox.itemData(self.parent.filterBox.findText(self.currentItem().text())).toPyObject().changeParameters()
         
     def remove(self):
         currentItem = self.currentItem()

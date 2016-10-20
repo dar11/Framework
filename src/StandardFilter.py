@@ -3,6 +3,7 @@ import numpy as np
 from AbstractFilter import AbstractFilter
 from PyQt4 import QtGui
 import math
+from ParamDialog import ParamDialog
 
 class EdgeFilter(AbstractFilter):
     
@@ -20,6 +21,18 @@ class EdgeFilter(AbstractFilter):
     
     def getParameters(self):
         return ["No Parameters"]
+    
+    def changeParameters(self):
+        params = ParamDialog()
+        if params.exec_():
+            first, second = params.returnParams()
+            self.first = first
+            self.second = second
+        
+    def change(self):
+        self.first = int(self.firstEdit.text())
+        self.second = int(self.secondEdit.text())
+        
     
 class HSVFilter(AbstractFilter):
     
