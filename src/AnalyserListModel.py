@@ -17,6 +17,13 @@ class AnalyserListModel(QtCore.QAbstractListModel):
             
             return value
         
+        if role == QtCore.Qt.ToolTipRole:
+            row = index.row()
+            value = self.__analyser[row]
+            tooltip = "Name: " + value.name + "\nDescription: " + value.description + "\nInput: " + value.input + "\nOutput: " + value.output 
+            
+            return tooltip
+        
         if role == QtCore.Qt.DisplayRole:
             
             row = index.row()

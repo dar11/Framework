@@ -8,6 +8,8 @@ class Display(AbstractOutput):
     
     def __init__(self, parent, name="Display"):
         self.name = name
+        self.description = "Displays the provided Image in the Screen"
+        self.input = "An image to be displayed"
         self.parent = parent
         
     def output(self, frame, info):

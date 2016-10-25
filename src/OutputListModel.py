@@ -17,6 +17,13 @@ class OutputListModel(QtCore.QAbstractListModel):
             
             return value
         
+        if role == QtCore.Qt.ToolTipRole:
+            row = index.row()
+            value = self.__output[row]
+            tooltip = "Name: " + value.name + "\nDescription: " + value.description + "\nInput: " + value.input
+            
+            return tooltip
+        
         if role == QtCore.Qt.DisplayRole:
             
             row = index.row()

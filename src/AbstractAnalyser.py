@@ -5,7 +5,10 @@ class AbstractAnalyser(object):
     
     def __init__(self, name):
         self.name = name
+        self.description = "Not specified"
+        self.input = "Not specified"
+        self.output = "Not specified"
     
     @abstractmethod
     def analyse(self, image, orig):
-        return image, orig
+        return image, orig, None

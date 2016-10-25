@@ -7,6 +7,8 @@ class Recorder(AbstractOutput):
     
     def __init__(self, resolution, name="Recorder"):
         self.name = name
+        self.description = "Writes the provided images to a video file"
+        self.input = "An image to write to file"
         self.fourcc = cv2.VideoWriter_fourcc(*'MJPG')
         self.out = cv2.VideoWriter('output.avi', self.fourcc, 10.0, resolution)
         

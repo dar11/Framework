@@ -5,7 +5,9 @@ class AbstractOutput(object):
     
     def __init__(self, name):
         self.name = name
+        self.description = "Not specified"
+        self.input = "Not specified"
         
     @abstractmethod
-    def output(self, image):
+    def output(self, image, info):
         pass

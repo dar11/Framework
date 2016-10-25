@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from AbstractFilter import AbstractFilter
 from PyQt4 import QtGui
+from PyQt4.QtGui import QMessageBox
 import math
 from ParamDialog import ParamDialog
 
@@ -23,15 +24,12 @@ class EdgeFilter(AbstractFilter):
         return ["No Parameters"]
     
     def changeParameters(self):
-        params = ParamDialog()
+        params = ParamDialog("First Threshold", "Second Threshold")
         if params.exec_():
-            first, second = params.returnParams()
-            self.first = first
-            self.second = second
+            parameter =  params.returnParams()
+            self.first = parameter[0]
+            self.second = parameter[1]
         
-    def change(self):
-        self.first = int(self.firstEdit.text())
-        self.second = int(self.secondEdit.text())
         
     
 class HSVFilter(AbstractFilter):
@@ -53,6 +51,13 @@ class HSVFilter(AbstractFilter):
     def getParameters(self):
         return ["No Parameters"]
     
+    def changeParameters(self):
+        msg = QMessageBox()
+        msg.setText("No Parameters")
+        msg.setInformativeText("There are no parameters for " + self.name + " to change")
+        msg.setStandardButtons(QMessageBox.Ok)
+        retval = msg.exec_() 
+    
 class GrayFilter(AbstractFilter):
     
     def __init__(self):
@@ -71,6 +76,13 @@ class GrayFilter(AbstractFilter):
         
     def getParameters(self):
         return ["No Parameters"]
+    
+    def changeParameters(self):
+        msg = QMessageBox()
+        msg.setText("No Parameters")
+        msg.setInformativeText("There are no parameters for " + self.name + " to change")
+        msg.setStandardButtons(QMessageBox.Ok)
+        retval = msg.exec_() 
     
 class YCrCbFilter(AbstractFilter):
     
@@ -91,6 +103,13 @@ class YCrCbFilter(AbstractFilter):
     def getParameters(self):
         return ["No Parameters"]
     
+    def changeParameters(self):
+        msg = QMessageBox()
+        msg.setText("No Parameters")
+        msg.setInformativeText("There are no parameters for " + self.name + " to change")
+        msg.setStandardButtons(QMessageBox.Ok)
+        retval = msg.exec_() 
+    
 class MinEnclosing(AbstractFilter):
     
     def __init__(self):
@@ -100,6 +119,9 @@ class MinEnclosing(AbstractFilter):
         self.output = "Returns the binary input image and the original image with the minimum enclosing circle drawn on it."
         self.center = (0,0)
         self.radius = 0
+        self.b = 0
+        self.g = 255
+        self.r = 0
     
     def execute(self, image, orig):
         temp_cont = image.copy()
@@ -110,11 +132,19 @@ class MinEnclosing(AbstractFilter):
         (x, y), radius = cv2.minEnclosingCircle(contour)
         self.center = (int(x), int(y))
         self.radius = int(radius)
-        cv2.circle(orig, (int(x), int(y)), int(radius), (0,255,0), 1)
+        cv2.circle(orig, (int(x), int(y)), int(radius), (self.b,self.g,self.r), 1)
         return image, orig
     
     def getParameters(self):
         return ["Center of Circle: " + str(self.center), "Radius of Circle: " + str(self.radius)]
+    
+    def changeParameters(self):
+            params = ParamDialog("Blue", "Green", "Red")
+            if params.exec_():
+                parameter =  params.returnParams()
+                self.b = parameter[0]
+                self.g = parameter[1]
+                self.r = parameter[2]
     
 class ConvexHull(AbstractFilter):
     
@@ -123,6 +153,9 @@ class ConvexHull(AbstractFilter):
         self.description = "Calculates the convex hull of the maximum contour of the input image."
         self.input = "Binary and original image"
         self.output = "Returns the binary input image and the original image with the convex hull drawn on it."
+        self.b = 0
+        self.g = 255
+        self.r = 0
         
     def execute(self, image, orig):
         temp_cont = image.copy()
@@ -132,11 +165,19 @@ class ConvexHull(AbstractFilter):
         contour = max(contours, key=cv2.contourArea)
         hull = cv2.convexHull(contour)
         hull = np.array(hull).reshape((-1,1,2)).astype(np.int32)
-        cv2.drawContours(orig, [hull], 0, (0,255,0), 1)
+        cv2.drawContours(orig, [hull], 0, (self.b,self.g,self.r), 1)
         return image, orig
     
     def getParameters(self):
         return ["No Parameters"]
+    
+    def changeParameters(self):
+        params = ParamDialog("Blue", "Green", "Red")
+        if params.exec_():
+            parameter =  params.returnParams()
+            self.b = parameter[0]
+            self.g = parameter[1]
+            self.r = parameter[2]
     
 class MaxInscribed(AbstractFilter):
     
@@ -147,6 +188,9 @@ class MaxInscribed(AbstractFilter):
         self.output = "Returns the binary input image and the original image with the maximum inscribed circle drawn on it."
         self.max_inscribed_center = (0,0)
         self.max_inscribed_radius = 0
+        self.b = 0
+        self.g = 0
+        self.r = 0
         
     def execute(self, image, orig):
         temp_cont = image.copy()
@@ -171,11 +215,19 @@ class MaxInscribed(AbstractFilter):
             self.max_inscribed_center = center
             self.max_inscribed_radius = maxDistance
             
-        cv2.circle(orig, self.max_inscribed_center, self.max_inscribed_radius, (0,0,0), 1)
+        cv2.circle(orig, self.max_inscribed_center, self.max_inscribed_radius, (self.b,self.g,self.r), 1)
         return image, orig
     
     def getParameters(self):
         return ["Center of Circle: " + str(self.max_inscribed_center), "Radius of Circle: " + str(self.max_inscribed_radius)]
+    
+    def changeParameters(self):
+        params = ParamDialog("Blue", "Green", "Red")
+        if params.exec_():
+            parameter =  params.returnParams()
+            self.b = parameter[0]
+            self.g = parameter[1]
+            self.r = parameter[2]
     
 class ColorFilter(AbstractFilter):
     
@@ -209,6 +261,13 @@ class ColorFilter(AbstractFilter):
     
     def getParameters(self):
         return ["Lower Color Values: " + str(self.lowerColor), "Upper Color Values: " + str(self.upperColor)]
+    
+    def changeParameters(self):
+        msg = QMessageBox()
+        msg.setText("No Parameters")
+        msg.setInformativeText("There are no parameters for " + self.name + " to change")
+        msg.setStandardButtons(QMessageBox.Ok)
+        retval = msg.exec_() 
     
 class Defects(AbstractFilter):
     
@@ -277,4 +336,11 @@ class Defects(AbstractFilter):
     
     def getParameters(self):
         return ["No Parameters"]
+    
+    def changeParameters(self):
+        msg = QMessageBox()
+        msg.setText("No Parameters")
+        msg.setInformativeText("There are no parameters for " + self.name + " to change")
+        msg.setStandardButtons(QMessageBox.Ok)
+        retval = msg.exec_() 
         

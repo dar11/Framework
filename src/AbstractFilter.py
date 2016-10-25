@@ -1,4 +1,5 @@
 from abc import ABCMeta, abstractmethod
+from PyQt4.QtGui import QMessageBox
 
 class AbstractFilter(object):
     __metaclass__ = ABCMeta
@@ -17,13 +18,13 @@ class AbstractFilter(object):
     def getParameters(self):
         pass
     
-    def register(self, parent):
-        parent.gui.append_filter(self)
-        
-    def register_and_activate(self, parent):
-        parent.gui.append_filter(self)
-        parent.gui.activate_filter(self)
-        parent.register_filter(self)
+    
+    def changeParameters(self):
+        msg = QMessageBox()
+        msg.setText("No Parameters")
+        msg.setInformativeText("There are no parameters for " + self.name + " to change")
+        msg.setStandardButtons(QMessageBox.Ok)
+        retval = msg.exec_() 
         
     def __eq__(self, other):
         return self.name == other.name

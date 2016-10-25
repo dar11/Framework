@@ -18,6 +18,8 @@ class GestureToCubis(AbstractOutput):
     
     def __init__(self, name="GestureToCubis"):
         self.name = name
+        self.description = "Calls a function on the balance based in the gesture of the user."
+        self.input = "A gesture as string"
         self.current_gesture = Gestures.Unsure
         self.cubis = CubisDevice("172.16.244.75")
         self.gesture_mapping = {"OpenHand" : "self.cubis.rightWindshieldKey", "TwoFingers" : "self.cubis.doTare", "ThumbLeft" : "self.cubis.getWeight"}

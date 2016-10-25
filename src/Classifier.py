@@ -12,6 +12,9 @@ class Classifier(AbstractAnalyser):
         self.classifier, self.training_names, self.normalization_parameter, self.train_features, self.train_labels, self.selector, self.scaler = joblib.load("/home/pi/Desktop/Framework/src/classifier.pkl")
         self.last_gesture = ""
         self.name = "Classifier"
+        self.description = "Uses a SVM Classifier to classify the provided image."
+        self.input = "An image to classify"
+        self.output = "The original image with the gesture written on it."
     
     def writeLastGesture(self, image):
         cv2.putText(image, self.last_gesture, (0,50), cv2.FONT_HERSHEY_SIMPLEX, 2, (0,0,255), 2)

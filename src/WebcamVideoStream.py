@@ -11,11 +11,6 @@ class WebcamVideoStream(AbstractVideoStream):
         self.framerate = framerate
         self.src = src
         self.stream = None
-        #self.stream = cv2.VideoCapture(src)
-        #self.stream.set(3,resolution[0])
-        #self.stream.set(4,resolution[1])
-        #self.stream.set(5, framerate)
-        #(self.grabbed, self.frame) = self.stream.read()
         self.stopped = True
 
     def get_resolution(self):
@@ -38,7 +33,6 @@ class WebcamVideoStream(AbstractVideoStream):
         return self.frame
     
     def stop(self):
-        #print "Closing Webcam"
         if self.stream is not None:
             self.stream.release()
         self.stopped = True

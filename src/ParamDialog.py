@@ -5,32 +5,41 @@ from PyQt4 import QtGui, QtCore
 
 class ParamDialog(QDialog):
     
-    def __init__(self):
+    def __init__(self, *arg):
         super(ParamDialog, self).__init__()
+        self.lineEdits = []
         
-        firstLabel = QtGui.QLabel("First Threshold")
-        secondLabel = QtGui.QLabel("Second Threshold")
-        self.firstEdit = QtGui.QLineEdit()
-        self.secondEdit = QtGui.QLineEdit()
         ok_button = QtGui.QPushButton("Apply")
+        cancel_button = QtGui.QPushButton("Cancel")
         layout = QtGui.QGridLayout()
-        layout.addWidget(firstLabel, 0, 0)
-        layout.addWidget(secondLabel, 1, 0)
-        layout.addWidget(self.firstEdit, 0, 1)
-        layout.addWidget(self.secondEdit, 1, 1)
-        layout.addWidget(ok_button, 2, 0)
+        i = 0
+        for a in arg:
+            label = QtGui.QLabel(a)
+            lineEdit = QtGui.QLineEdit()
+            lineEdit.setText("0")
+            self.lineEdits.append(lineEdit)
+            layout.addWidget(label, i, 0)
+            layout.addWidget(lineEdit, i, 1)
+            i += 1
+
+        layout.addWidget(ok_button, i, 0)
+        layout.addWidget(cancel_button, i , 1)
         self.setLayout(layout)
         
-        self.first = None
-        self.second = None
+        self.returns = []
+        self.setWindowTitle("Change Parameter")
         
         ok_button.clicked.connect(self.change)
+        cancel_button.clicked.connect(self.cancel)
+        
+    def cancel(self):
+        self.reject()
         
     def change(self):
-        self.first = int(self.firstEdit.text())
-        self.second = int(self.secondEdit.text())
+        for edit in self.lineEdits:
+            self.returns.append(int(edit.text()))
         self.accept()
         
     def returnParams(self):
-        return self.first, self.second
+        return self.returns
         
