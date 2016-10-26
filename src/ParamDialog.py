@@ -16,7 +16,7 @@ class ParamDialog(QDialog):
         for a in arg:
             label = QtGui.QLabel(a)
             lineEdit = QtGui.QLineEdit()
-            lineEdit.setText("0")
+            lineEdit.setPlaceholderText("0")
             self.lineEdits.append(lineEdit)
             layout.addWidget(label, i, 0)
             layout.addWidget(lineEdit, i, 1)

@@ -33,9 +33,9 @@ class FrameworkCentralWidget(QtGui.QMdiArea):
     def initUI(self):
         self.fps = 10
         self.cap = None
-        self.webcam = WebcamVideoStream(resolution=(320, 240), framerate=10)
+        self.webcam = WebcamVideoStream(resolution=(960, 720), framerate=10)
         self.picam = PiVideoStream(resolution=(960, 720), framerate=10)
-        self.recorder = Recorder(resolution=(320,240))
+        self.recorder = Recorder(resolution=(960,720))
         self.timer = None
         self.show_image = True
         

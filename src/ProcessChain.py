@@ -12,13 +12,11 @@ class ProcessItem:
         self.successors = []
         
 
-#class ProcessChain(QListWidget):
 class ProcessChain(QListWidget):
     
     def __init__(self, parent):
         super(ProcessChain, self).__init__()
-        #self.model = ProcessListModel()
-        #self.setModel(self.model)
+
         self.source = None
         self.filter_count = 0
         self.output_count = 0
@@ -30,16 +28,6 @@ class ProcessChain(QListWidget):
         self.itemClicked.connect(self.showParameters)
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.connect(self, QtCore.SIGNAL("customContextMenuRequested(QPoint)"), self.showMenu)
-        
-    #def dragEnterEvent(self, event):
-    #    event.accept()
-        
-    #def dropEvent(self, event):
-        #print event.mimeData().text()
-    #    event.accept()
-        
-    #def addItem(self, item):
-    #    self.model.addItem(item)
         
     def showParameters(self, item):
         self.parent.showParameters()

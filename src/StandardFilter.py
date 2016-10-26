@@ -245,7 +245,6 @@ class ColorFilter(AbstractFilter):
         if not self.lowerColorPicked:
             color = QtGui.QColorDialog.getColor()
             hsv = color.getHsv()
-            print hsv
             self.lowerColor = np.array([hsv[0], hsv[1], hsv[2]])
             self.lowerColorPicked = True
         if not self.upperColorPicked:
@@ -263,11 +262,17 @@ class ColorFilter(AbstractFilter):
         return ["Lower Color Values: " + str(self.lowerColor), "Upper Color Values: " + str(self.upperColor)]
     
     def changeParameters(self):
-        msg = QMessageBox()
-        msg.setText("No Parameters")
-        msg.setInformativeText("There are no parameters for " + self.name + " to change")
-        msg.setStandardButtons(QMessageBox.Ok)
-        retval = msg.exec_() 
+        #msg = QMessageBox()
+        #msg.setText("No Parameters")
+        #msg.setInformativeText("There are no parameters for " + self.name + " to change")
+        #msg.setStandardButtons(QMessageBox.Ok)
+        #retval = msg.exec_() 
+        color = QtGui.QColorDialog.getColor()
+        hsv = color.getHsv()
+        self.lowerColor = np.array([hsv[0], hsv[1], hsv[2]])
+        color = QtGui.QColorDialog.getColor()
+        hsv = color.getHsv()
+        self.upperColor = np.array([hsv[0], hsv[1], hsv[2]])
     
 class Defects(AbstractFilter):
     

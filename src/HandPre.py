@@ -1,4 +1,4 @@
-
+from ParamDialog import ParamDialog
 import cv2
 import numpy as np
 from AbstractFilter import AbstractFilter
@@ -32,3 +32,14 @@ class HandPre(AbstractFilter):
     
     def getParameters(self):
         return ["No Parameters"]
+    
+    def changeParameters(self):
+        params = ParamDialog("Y_MIN", "Y_MAX", "Cr_MIN", "Cr_MAX", "Cb_MIN", "Cb_MAX")
+        if params.exec_():
+            parameter =  params.returnParams()
+            self.Y_MIN = parameter[0]
+            self.Y_MAX = parameter[1]
+            self.Cr_MIN = parameter[2]
+            self.Cr_MAX = parameter[3]
+            self.Cr_MIN = parameter[4]
+            self.Cr_MAX = parameter[5]
